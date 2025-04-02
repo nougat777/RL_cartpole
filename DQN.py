@@ -63,7 +63,7 @@ def data_normalize(state):
     for i in range(len(state)):
         result[i] = (state[i] - data_min) / (data_max - data_min)
     return result  
-def update_model(targetnet:nn.Module,replaybuffer:ReplayBuffer):
+def update_model():
     loss_function = nn.MSELoss()
     state,action,reward,next_state = replaybuffer.sample(batch_size)
     policynet.train()
@@ -113,6 +113,7 @@ def train_model():
             best_state_dict = policynet.state_dict()
         print(f'\r(TRAIN) {(episode)/train_max_episode*100:6.1f}% avgR:{rewardss/(episode+1):4.0f} maxR:{max_rewards:4.0f}',end='',flush=True)
         exploration = max(exploration_min,exploration*exploration_decay)
+        update_model()
         if episode%2 == 0:
             targetnet.load_state_dict(policynet.state_dict())
         if episode >= train_max_episode:
@@ -122,6 +123,7 @@ def train_model():
         if rewardss/(episode+1) < 100 and episode > train_max_episode *.5:
             episode = 0
             rewardss = 0
+            exploration = exploration_init
     env.close()
     print()
     return best_state_dict
@@ -166,7 +168,7 @@ def test_model(state_dict = None):
         max_rewards = max(rewards,max_rewards)
         print(f'\r( TEST) {(episode)/test_max_episode*100:6.1f}% avgR:{rewardss / (episode+1):4.0f} maxR:{max_rewards:4.0f} truncated:{truncated_count:3d}',end='',flush=True)
         if truncated_count + test_max_episode - episode < test_truncated_target:
-            print('\033[4 early quit\033[0m')
+            print('\033[41mearly quit\033[0m')
             break
     env.close()
     print()
@@ -177,8 +179,7 @@ def main():
     state_dict = None
     try:
         policynet.load_state_dict(torch.load('./'+modelpth_name,weights_only=True))
-    except Exception as e:
-        print(e)
+    except:
         pass
     try:
         while(1):
