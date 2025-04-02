@@ -1,5 +1,5 @@
-import gym
-import gym.envs
+import gymnasium
+import gymnasium.envs
 import torch.nn as nn
 import torch
 import numpy as np
@@ -84,7 +84,7 @@ def train_model():
     targetnet.load_state_dict(policynet.state_dict())
     targetnet.eval()
     policynet.eval()
-    env = gym.make('CartPole-v1',render_mode='rgb_array')
+    env = gymnasium.make('CartPole-v1',render_mode='rgb_array')
     best_state_dict = None
     max_rewards = 0
     rewardss = 0
@@ -135,7 +135,7 @@ def test_model(state_dict = None):
             return False
     else:
         testnet.load_state_dict(state_dict)
-    env = gym.make('CartPole-v1',render_mode='rgb_array')
+    env = gymnasium.make('CartPole-v1',render_mode='rgb_array')
     truncated_flag = False
     truncated_count = 0
     max_rewards = 0
