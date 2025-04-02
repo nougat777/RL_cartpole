@@ -1,0 +1,4 @@
+/myvenv
+/__pycache__
+*.txt
+*.pth
