@@ -181,13 +181,14 @@ def main():
         policynet.load_state_dict(torch.load('./'+modelpth_name,weights_only=True))
     except:
         pass
+    
+    while(1):
+        state_dict = train_model()
+        if(test_model(state_dict)):
+            print('sucess!')
+            break
+if __name__ == '__main__':
     try:
-        while(1):
-            state_dict = train_model()
-            if(test_model(state_dict)):
-                print('sucess!')
-                break
+        main()
     except KeyboardInterrupt:
         print("\r\nInterrput")
-if __name__ == '__main__':
-    main()
